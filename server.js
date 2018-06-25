@@ -10,15 +10,15 @@ const app = express();
 app.use(express.static('public'));
 
 app.get('/api/notes', (req, res) => {
-    res.json(data);
+    const queryTerm = req.query.searchTerm;
+    let filteredData = data.filter(item => item.title.includes(queryTerm));
+    res.json(filteredData);
 })
 
 app.get('/api/notes/:id', (req, res) => {
     const id = req.params.id;
     let note = data.find(item => item.id === Number(id));
-    
     res.json(note);
-
 })
 
 
