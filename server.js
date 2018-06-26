@@ -1,12 +1,17 @@
 'use strict';
 
-// Load array of notes
 const express = require('express');
-
 const data = require('./db/notes');
-
+const { PORT } = require('./config');
+const { logger } = require('./middleware/logger');
 const app = express();
 
+//middleware
+app.use(logger);
+
+
+
+//endpoints
 app.use(express.static('public'));
 
 app.get('/api/notes', (req, res) => {
@@ -22,11 +27,8 @@ app.get('/api/notes/:id', (req, res) => {
 })
 
 
-
-
-
-
-app.listen(8080, function() {
+//server listening
+app.listen(PORT, function() {
     console.info(`Server listening on ${this.address().port}`);
 }).on('error', err => {
     console.error(err);
