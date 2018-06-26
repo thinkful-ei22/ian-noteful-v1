@@ -16,11 +16,16 @@ app.use(logger);
 //endpoints
 app.use(express.static('public'));
 
-app.get('/api/notes', (req, res) => {
-    const queryTerm = req.query.searchTerm;
-    let filteredData = data.filter(item => item.title.includes(queryTerm));
-    res.json(filteredData);
-})
+app.get('/api/notes', (req, res, next) => {
+    const {searchTerm} = req.query;
+
+    notes.filter(searchTerm, (err, list) => {
+        if(err){
+            return next(err);
+        }
+        res.json(list);
+    });
+});
 
 app.get('/api/notes/:id', (req, res) => {
     const id = req.params.id;
