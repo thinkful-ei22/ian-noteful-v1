@@ -11,10 +11,36 @@ const app = express();
 //middleware
 app.use(logger);
 
+app.use(express.static('public'));
 
+app.use(express.json());
 
 //endpoints
-app.use(express.static('public'));
+app.put('/api/notes/:id', (req, res, next) => {
+    const id = req.params.id;
+
+    const updateObj = {};
+    const updateFields = ['title', 'content'];
+
+    updateFields.forEach(field => {
+        if(field in req.body){
+            updateObj[field] = req.body[field];
+        }
+    });
+
+    notes.update(id, updateObj, (err, item) => {
+        if(err){
+            return next(err);
+        }
+        if(item) {
+            res.json(item);
+        }
+        else{
+            next();
+        }
+    });
+});
+
 
 app.get('/api/notes', (req, res, next) => {
     const {searchTerm} = req.query;
@@ -28,7 +54,7 @@ app.get('/api/notes', (req, res, next) => {
 });
 
 app.get('/api/notes/:id', (req, res, next) => {
-    const {id} = req.params;
+    const id = req.params.id;
 
     notes.find(id, (err, item) => {
         if(err){
@@ -39,11 +65,8 @@ app.get('/api/notes/:id', (req, res, next) => {
 });
 
 
-//     const id = req.params.id;
-//     let note = data.find(item => item.id === Number(id));
-//     res.json(note);
-// })
 
+//error handling
 app.use(function(req, res, next){
     let err = new Error('Not Found');
     err.status = 404;
