@@ -44,10 +44,9 @@ const noteful = (function () {
 
       api.details(noteId)
         .then(detailsResponse => {
-        store.currentNote = detailsResponse;
-        render();
+          store.currentNote = detailsResponse;
+          render();
       });
-
     });
   }
 
@@ -60,51 +59,12 @@ const noteful = (function () {
 
       api.search(store.currentSearchTerm)
         .then(searchResponse => {
-        store.notes = searchResponse;
-        render();
+          store.notes = searchResponse;
+          render();
       });
 
     });
   }
-
-  // function handleNoteFormSubmit() {
-  //   $('.js-note-edit-form').on('submit', function (event) {
-  //     event.preventDefault();
-
-  //     const editForm = $(event.currentTarget);
-
-  //     const noteObj = {
-  //       id: store.currentNote.id,
-  //       title: editForm.find('.js-note-title-entry').val(),
-  //       content: editForm.find('.js-note-content-entry').val()
-  //     };
-
-  //     if (noteObj.id) {
-  //       api.update(store.currentNote.id, noteObj, updateResponse => {
-  //         store.currentNote = updateResponse;
-
-  //         api.search(store.currentSearchTerm, searchResponse => {
-  //           store.notes = searchResponse;
-  //           render();
-  //         });
-
-  //       });
-
-  //     } else {
-
-  //       api.create(noteObj, createResponse => {
-  //         store.currentNote = createResponse;
-
-  //         api.search(store.currentSearchTerm, searchResponse => {
-  //           store.notes = searchResponse;
-  //           render();
-  //         });
-
-  //       });
-  //     }
-
-  //   });
-  // }
 
   function handleNoteFormSubmit() {
     $('.js-note-edit-form').on('submit', function (event) {
@@ -121,26 +81,25 @@ const noteful = (function () {
       if (noteObj.id) {
         api.update(store.currentNote.id, noteObj)
           .then(updateResponse => {
-          store.currentNote = updateResponse;
+            store.currentNote = updateResponse;
+            return api.search(store.currentSearchTerm);
           })
-          .then(api.search(store.currentSearchTerm)
-            .then(searchResponse => {
+          .then(searchResponse => {
             store.notes = searchResponse;
             render();
-        }))
+        })
           
       }
       else {
         api.create(noteObj)
           .then(createResponse => {
-          store.currentNote = createResponse;
+            store.currentNote = createResponse;
+            return api.search(store.currentSearchTerm)
           })
-          .then(api.search(store.currentSearchTerm)
-            .then(searchResponse => {
+          .then(searchResponse => {
             store.notes = searchResponse;
             render();
           })
-        );
       }
     });
   }
@@ -162,8 +121,8 @@ const noteful = (function () {
       const noteId = getNoteIdFromElement(event.currentTarget);
 
       api.remove(noteId)
-        .then(api.search(store.currentSearchTerm)
-          .then(searchResponse => {
+        .then(() => api.search(store.currentSearchTerm)
+        .then(searchResponse => {
           store.notes = searchResponse;
           if (noteId === store.currentNote.id) {
             store.currentNote = {};
