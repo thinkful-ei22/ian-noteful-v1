@@ -4,9 +4,9 @@ const data = require('../db/notes');
 const simDB = require('../db/simDB');
 const notes = simDB.initialize(data);
 
+
 router.put('/:id', (req, res, next) => {
     const id = req.params.id;
-
     const updateObj = {};
     const updateFields = ['title', 'content'];
 
@@ -16,75 +16,79 @@ router.put('/:id', (req, res, next) => {
         }
     });
 
-    notes.update(id, updateObj, (err, item) => {
-        if(err){
-            return next(err);
-        }
-        if(item) {
-            res.json(item);
-        }
-        else{
-            next();
-        }
-    });
+    notes.update(id, updateObj)
+        .then(item => {
+            if(item){
+                res.json(item);
+            } else {
+                next();
+            }
+        })
+        .catch(err => {
+            next(err);
+        })
 });
+
 
 router.post('/', (req, res, next) => {
     const { title, content } = req.body;
-
     const newItem = { title, content};
         if(!newItem.title){
             const err = new Error('missing title in the request body');
             err.status = 404;
             return next(err);
         }
-        notes.create(newItem, (err, item) => {
-            if (err){
-                return next(err);
-            }
-            if (item) {
-                res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
-            }
-            else{
-                next();
-            }
-        });
+        notes.create(newItem)
+            .then(item => {
+                if(item){
+                    res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
+                } else {
+                    next();
+                }
+            })
+            .catch(err => {
+                next(err);
+            })
     });
 
 router.delete('/:id', (req, res ,next) => {
     const id = req.params.id;
-    notes.delete(id, (err) => {
-        if(err){
-            return next(err);
-        }
-        else{
-            res.sendStatus(204);
-        }
-    });
-
-})
+    notes.delete(id)
+        .then(res.sendStatus(204))
+        .catch(err => {
+            next(err);
+        })
+});
 
 
 router.get('/', (req, res, next) => {
     const {searchTerm} = req.query;
-
-    notes.filter(searchTerm, (err, list) => {
-        if(err){
-            return next(err);
-        }
-        res.json(list);
-    });
+    notes.filter(searchTerm)
+        .then(list => {
+            if(list) {
+                res.json(list);
+            } else {
+                next();
+            }
+        })
+        .catch(err => {
+            next(err);
+        })
 });
 
 router.get('/:id', (req, res, next) => {
     const id = req.params.id;
-
-    notes.find(id, (err, item) => {
-        if(err){
-            return next(err);
-        }
-        res.json(item);
-    });
+    notes.find(id)
+        .then(item => {
+            if (item) {
+                res.json(item);
+            } else {
+                next();
+            }
+        })
+        .catch(err => {
+            next(err);
+        });
 });
 
 module.exports = router;

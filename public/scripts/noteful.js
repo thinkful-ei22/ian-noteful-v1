@@ -138,7 +138,6 @@ const noteful = (function () {
   function bindEventListeners() {
     handleNoteItemClick();
     handleNoteSearchSubmit();
-
     handleNoteFormSubmit();
     handleNoteStartNewSubmit();
     handleNoteDeleteClick();

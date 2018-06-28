@@ -11,7 +11,7 @@ notes.filter('cats', (err, list) => {
 });
 
 // GET Notes by ID
-notes.find(1005, (err, item) => {
+notes.find(id, (err, item) => {
   if (err) {
     console.error(err);
   }
