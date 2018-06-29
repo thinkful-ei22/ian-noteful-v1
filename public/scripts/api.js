@@ -31,7 +31,7 @@ const api = {
   },
 
   create: function (obj) {
-    return $.ajax({
+    const response = $.ajax({
       type: 'POST',
       url: '/api/notes',
       contentType: 'application/json',
@@ -39,6 +39,8 @@ const api = {
       processData: false,
       data: JSON.stringify(obj),
     });
+    console.log(response);
+    return response;
   },
 
   remove: function (id) {
