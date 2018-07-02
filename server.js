@@ -31,7 +31,7 @@ app.use(function(err, req, res, next){
 });
 
 //server listening
-if( require.main === module) {
+if( require.main === module ) {
     app.listen(PORT, function() {
         console.info(`Server listening on ${this.address().port}`);
     }).on('error', err => {

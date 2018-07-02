@@ -16,6 +16,12 @@ router.put('/:id', (req, res, next) => {
         }
     });
 
+    if (!updateObj.title) {
+        const err = new Error('missing title in the request body');
+        err.status = 400;
+        return next(err);
+      }
+
     notes.update(id, updateObj)
         .then(item => {
             if(item){
